@@ -1,0 +1,5 @@
+{
+  "name": "DeepDrive WebGPU Demo1",
+  "description": "Depth estimation and Object detection on dashboard camera video using Transformers.js and WebGPU.",
+  "requestFramePermissions": []
+}

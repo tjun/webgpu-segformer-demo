@@ -41,7 +41,11 @@ const VideoProcessor: React.FC<VideoProcessorProps> = ({ videoSrc, modelStatus }
     setIsPlaying(false);
     analysisTriggeredRef.current = false;
     
-    if (visibleVideoRef.current) visibleVideoRef.current.currentTime = 0;
+    // Explicitly reset video time and pause
+    if (visibleVideoRef.current) {
+        visibleVideoRef.current.currentTime = 0;
+        visibleVideoRef.current.pause();
+    }
     
     const clearCanvas = (ref: React.RefObject<HTMLCanvasElement>) => {
         if (ref.current) {
@@ -326,7 +330,14 @@ const VideoProcessor: React.FC<VideoProcessorProps> = ({ videoSrc, modelStatus }
            </div>
 
            <div className="relative w-full aspect-video bg-black overflow-hidden border border-slate-800">
+                {/* 
+                  CRITICAL: 
+                  - key={videoSrc} ensures the video element is re-created when source changes. 
+                    This is vital for correct CORS behavior and state reset.
+                  - crossOrigin="anonymous" is required to prevent Tainted Canvas errors when drawing to canvas.
+                */}
                 <video
+                    key={videoSrc}
                     ref={visibleVideoRef}
                     src={videoSrc}
                     onLoadedData={handleVideoLoaded}

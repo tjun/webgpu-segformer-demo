@@ -7,6 +7,7 @@ import { ModelStatus } from './types';
 function App() {
   const [videoSrc, setVideoSrc] = useState<string | null>(null);
   const [modelStatus, setModelStatus] = useState<ModelStatus>({ status: 'idle' });
+  const [showSampleMenu, setShowSampleMenu] = useState<boolean>(false);
 
   // Load Models on Mount
   useEffect(() => {
@@ -31,7 +32,13 @@ function App() {
     if (file) {
       const url = URL.createObjectURL(file);
       setVideoSrc(url);
+      setShowSampleMenu(false);
     }
+  };
+
+  const loadSample = (path: string) => {
+      setVideoSrc(path);
+      setShowSampleMenu(false);
   };
 
   return (
@@ -120,11 +127,43 @@ function App() {
                         System requires MP4/WebM input for WebGPU processing.
                     </p>
 
-                    <label className="group relative cursor-pointer px-8 py-4 bg-cyan-950/30 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500 hover:text-slate-950 transition-all duration-300 font-bold tracking-widest uppercase overflow-hidden">
-                        <span className="relative z-10">Select Source File</span>
-                        <div className="absolute inset-0 bg-cyan-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
-                        <input type="file" accept="video/*" onChange={handleFileUpload} className="hidden" />
-                    </label>
+                    <div className="flex flex-col gap-4 w-full max-w-xs">
+                        {/* File Upload Button */}
+                        <label className="group relative cursor-pointer px-8 py-4 bg-cyan-950/30 border border-cyan-500/50 text-cyan-400 hover:bg-cyan-500 hover:text-slate-950 transition-all duration-300 font-bold tracking-widest uppercase overflow-hidden text-center">
+                            <span className="relative z-10">Select Source File</span>
+                            <div className="absolute inset-0 bg-cyan-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
+                            <input type="file" accept="video/*" onChange={handleFileUpload} className="hidden" />
+                        </label>
+
+                        {/* Sample Data Button */}
+                        <div className="relative">
+                            <button 
+                                onClick={() => setShowSampleMenu(!showSampleMenu)}
+                                className="w-full px-8 py-3 bg-slate-950 border border-slate-700 text-slate-400 hover:border-amber-500/50 hover:text-amber-500 transition-all duration-300 font-mono text-xs tracking-widest uppercase"
+                            >
+                                {showSampleMenu ? 'CANCEL SELECTION' : 'INITIATE SIMULATION (SAMPLE)'}
+                            </button>
+
+                            {/* Sample Selection Menu (Slide down) */}
+                            {showSampleMenu && (
+                                <div className="absolute top-full left-0 w-full mt-2 bg-slate-900 border border-amber-900/50 flex flex-col z-20 shadow-xl">
+                                    <button 
+                                        onClick={() => loadSample('./demo1.mp4')}
+                                        className="px-4 py-3 text-left text-xs font-mono text-amber-500/80 hover:bg-amber-900/20 hover:text-amber-400 border-b border-amber-900/30 transition-colors"
+                                    >
+                                        ▷ SEQUENCE_01 [CITY]
+                                    </button>
+                                    <button 
+                                        onClick={() => loadSample('./demo2.mp4')}
+                                        className="px-4 py-3 text-left text-xs font-mono text-amber-500/80 hover:bg-amber-900/20 hover:text-amber-400 transition-colors"
+                                    >
+                                        ▷ SEQUENCE_02 [HIGHWAY]
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                  </div>
              </div>
           </div>
